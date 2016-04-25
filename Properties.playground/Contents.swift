@@ -34,7 +34,6 @@ HINT: Apple has done most of the hard work for you in the class CLLocation. See 
  5. When completed, before the class the problem set is due, commit your changes to your fork of the repository. I should be able to simply clone your fork, build it and execute it in my environment without encountering any warnings, adding any dependencies or making any modifications.
  
  ## Unit tests that Run Automatically */
-
 import CoreLocation
 
 struct LocationTrack {
@@ -42,8 +41,13 @@ struct LocationTrack {
     var locations: [CLLocation]
     
     var length: CLLocationDistance {
+        var total : Double = 0
+        if locations.count == 0 {return total}
+        for i in 0..<locations.count-1 {
+            total += locations[i+1].distanceFromLocation(locations[i])
+        }
         // this function should sum up all the distances between the locations in the track
-        return 1000.0 // right now it just returns 1000 (in meters, which is one kilometer).
+        return total // right now it just returns 1000 (in meters, which is one kilometer).
     }
     
 }
@@ -52,7 +56,7 @@ struct LocationTrack {
 import XCTest
 
 class LocationTrackTestSuite: XCTestCase {
-
+    
     func testLengthOfTrackWithNoPoints() {
         let noPointsTrack = LocationTrack(locations: [])
         let expectedResult: CLLocationDistance = 0
@@ -66,6 +70,18 @@ class LocationTrackTestSuite: XCTestCase {
         XCTAssertEqual(expectedResult, onePointTrack.length, "Single point track should have zero length.")
     }
     
+    // SF is 37.7749, 122.4194
+    // Moraga is 37.8349, 122.1297
+    func lengthofSFtoMoraga() {
+        let sanFransisco = CLLocation(latitude: 37.7749, longitude:122.4194)
+        let moraga = CLLocation(latitude: 37.8349, longitude: 122.1297)
+        let twopointtrack = LocationTrack (locations: [sanFransisco, moraga])
+        let aboutEqual = twopointtrack.length > 15000 && twopointtrack.length < 30000
+        //used XCTAssertTrue to check if it is correct
+        XCTAssertTrue ( aboutEqual, " distance of SF to Moraga is not correct")
+        
+        
+    }
     
 }
 /*:
